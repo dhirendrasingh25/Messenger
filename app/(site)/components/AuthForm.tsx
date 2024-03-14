@@ -1,18 +1,22 @@
 'use client';
-
+import axios from "axios";
+import { signIn, useSession } from 'next-auth/react';
 import React from 'react'
 import { useState } from 'react';
 import { useCallback } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { BsGithub, BsGoogle  } from 'react-icons/bs';
+import { useRouter } from "next/navigation";
 
 import Input from "@/app/components/inputs/Input";
 import Button from '@/app/components/Button';
 import AuthSocialButton from './AuthSocialButton';
-// import { toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";
 
 type Variant ='LOGIN' | 'REGISTER'
 export const AuthForm = () => {
+  // const session = useSession();
+  const router = useRouter();
     const [variant, setVariant] = useState<Variant>('LOGIN')
     const [isLoading, setIsLoading] = useState(false);
     const toggleVariant = useCallback(() => {
@@ -38,24 +42,30 @@ export const AuthForm = () => {
     })
 
     const onSubmit:SubmitHandler<FieldValues> =(data)=>{
+      console.log(data);
         setIsLoading(true);
         if (variant === 'REGISTER') {
-            // axios.post('/api/register', data)
-            // .then(() => signIn('credentials', {
-            //   ...data,
-            //   redirect: false,
-            // }))
-            // .then((callback) => {
-            //   if (callback?.error) {
-            //     toast.error('Invalid credentials!');
-            //   }
+            axios.post('/api/register', data)
+            .then(() => signIn('credentials', {
+              ...data,
+              redirect: false,
+            }))
+            .then((callback) => {
+              if (callback?.error) {
+                toast.error('Invalid credentials!');
+              }
+              console.log(callback);
+              console.log("Done");
       
-            //   if (callback?.ok) {
-            //     router.push('/conversations')
-            //   }
-            // })
-            // .catch(() => toast.error('Something went wrong!'))
-            // .finally(() => setIsLoading(false))
+              // if (callback?.ok) {
+              //   router.push('/conversations')
+              // }
+            })
+            .catch(() => {
+              toast.error('Something went wrong!')
+              console.log("Error");
+            })
+            .finally(() => setIsLoading(false))
           }
       
           if (variant === 'LOGIN') {
