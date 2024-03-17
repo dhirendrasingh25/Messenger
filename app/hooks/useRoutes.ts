@@ -7,6 +7,7 @@ import useConversation from "./useConversation";
 
 const useRoutes = () => {
   const pathname = usePathname();
+  console.log(pathname);
   const { conversationId } = useConversation();
 
   const routes = useMemo(() => [
